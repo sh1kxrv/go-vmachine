@@ -10,7 +10,7 @@ func main() {
 	println("Simple Virtual Machine on GoLang v1.0")
 	vmachine := vm.NewVM()
 
-	instructions := []*instruction.Instruction{
+	instructions := instruction.InstructionList{
 		instruction.NewNumber(20),
 		instruction.NewNumber(30),
 		instruction.NewOperator(instruction.OpCodeAdd),

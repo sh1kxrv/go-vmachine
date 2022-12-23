@@ -5,6 +5,7 @@ import "fmt"
 type Instruction struct {
 	Operand interface{}
 	OpCode  OpCode
+	Offset  int
 }
 
 func NewInstruction(opcode OpCode, operand interface{}) *Instruction {
@@ -61,4 +62,8 @@ func (i *Instruction) SetOperand(operand interface{}) {
 
 func (i *Instruction) SetOpCode(opcode OpCode) {
 	i.OpCode = opcode
+}
+
+func (i *Instruction) SetOffset(offset int) {
+	i.Offset = offset
 }

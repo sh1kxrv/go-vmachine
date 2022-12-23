@@ -31,6 +31,13 @@ func (s *Stack) Pop() *StackValue {
 	return popped
 }
 
+func (s *Stack) Peek(offset int) *StackValue {
+	if len(s.StackData) == 0 {
+		return nil
+	}
+	return s.StackData[0 + offset]
+}
+
 func (s *Stack) Debug() {
 	for _, v := range s.StackData {
 		println(fmt.Sprintf("%v", v))

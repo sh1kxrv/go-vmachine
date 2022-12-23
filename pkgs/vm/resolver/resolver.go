@@ -29,7 +29,7 @@ func NewResolver() *Resolver {
 }
 
 
-func (r *Resolver) Resolve(instructions []*instruction.Instruction, stack *stack.Stack) {
+func (r *Resolver) Resolve(instructions instruction.InstructionList, stack *stack.Stack) {
 	for _, instruction := range instructions {
 		handler := r.Handlers[instruction.OpCode]
 		if handler == nil {

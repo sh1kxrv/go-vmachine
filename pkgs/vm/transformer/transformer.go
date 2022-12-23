@@ -21,12 +21,13 @@ func NewTransformer() *Transformer {
 			instruction.OpCodeLdci8: handler.TransformLdci8,
 			instruction.OpCodeLdcf4: handler.TransformLdcf4,
 			instruction.OpCodeLdcf8: handler.TransformLdcf8,
+			instruction.OpCodeOperator: handler.TransformOperator,
 		},
 	}
 }
 
 // Instructions optimizer
-func (t *Transformer) Transform(instructions []*instruction.Instruction) {
+func (t *Transformer) Transform(instructions instruction.InstructionList) {
 	for _, i := range instructions {
 		handler := t.Transformers[i.OpCode]
 		if handler == nil {
@@ -34,5 +35,10 @@ func (t *Transformer) Transform(instructions []*instruction.Instruction) {
 			continue
 		}
 		handler(i)
+	}
+
+	// Calculate offsets
+	for i, v := range instructions {
+		v.SetOffset(i)
 	}
 }
