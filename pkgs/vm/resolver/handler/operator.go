@@ -10,7 +10,7 @@ func OperatorHandler(stack *stack.Stack, instr *instruction.Instruction) {
 	v1, v2 := stack.Pop(), stack.Pop()
 	if v1 == nil || v2 == nil {
 		panic("expected two values on stack")
-	} else if v1.OpCode != instruction.OpCodeNumber || v2.OpCode != instruction.OpCodeNumber {
+	} else if !v1.IsNumber() || !v2.IsNumber() {
 		panic("expected two numbers on stack")
 	}
 
@@ -23,6 +23,10 @@ func OperatorHandler(stack *stack.Stack, instr *instruction.Instruction) {
 		result = instruction.NewNumber(v1.Operand.(int) + v2.Operand.(int))
 	case instruction.OpCodeSub:
 		result = instruction.NewNumber(v1.Operand.(int) - v2.Operand.(int))
+	case instruction.OpCodeMul:
+		result = instruction.NewNumber(v1.Operand.(int) * v2.Operand.(int))
+	case instruction.OpCodeDiv:
+		result = instruction.NewNumber(v1.Operand.(int) / v2.Operand.(int))
 	default:
 		panic(fmt.Sprintf("invalid instruction %v", instr))
 	}

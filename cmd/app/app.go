@@ -16,6 +16,7 @@ func main() {
 		instruction.NewNumber(10),
 		instruction.NewOperator(instruction.OpCodeSub),
 	)
+	vmachine.Stack.Debug()
 	machine_result := vmachine.Run()
 	fmt.Printf("Result: %v", machine_result)
 }

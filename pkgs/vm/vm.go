@@ -1,9 +1,10 @@
 package vm
 
 import (
-	"go-vmachine/pkgs/vm/handler"
+	"go-vmachine/pkgs/vm/analyser"
 	"go-vmachine/pkgs/vm/instruction"
 	"go-vmachine/pkgs/vm/resolver"
+	"go-vmachine/pkgs/vm/resolver/handler"
 	"go-vmachine/pkgs/vm/stack"
 )
 
@@ -18,14 +19,20 @@ func NewVM() *VM {
 }
 
 func (vm *VM) Run() interface{} {
+	analyser := analyser.NewAnalyser()
 	resolver := resolver.NewResolver()
 	resolver.
-		Register(instruction.OpCodeNumber, handler.NumberHandler).
-		Register(instruction.OpCodeString, handler.OperatorHandler).
+		Register(instruction.OpCodeLdci1, handler.NumberHandler).
+		Register(instruction.OpCodeLdci2, handler.NumberHandler).
+		Register(instruction.OpCodeLdci4, handler.NumberHandler).
+		Register(instruction.OpCodeLdci8, handler.NumberHandler).
+		Register(instruction.OpCodeLdcf4, handler.NumberHandler).
+		Register(instruction.OpCodeLdcf8, handler.NumberHandler).
 		Register(instruction.OpCodeOperator, handler.OperatorHandler).
 		Register(instruction.OpCodeRet, handler.ReturnHandler)
 
 	for _, instruction := range vm.Stack.Instructions {
+		analyser.Analyse(instruction)
 		resolver.Resolve(vm.Stack, instruction)
 	}
 	return vm.Stack.Pop()

@@ -5,6 +5,6 @@ import (
 	"go-vmachine/pkgs/vm/stack"
 )
 
-func NumberHandler(stack *stack.Stack, instruction *instruction.Instruction) {
+func NumberHandler(stack *stack.Stack, instr *instruction.Instruction) {
 	// ...
 }
