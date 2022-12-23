@@ -15,3 +15,8 @@ instructions := []*instruction.Instruction{
 }
 // -> 40
 ```
+
+## TODO
+- [ ] Read instructions from file & transpile
+---
+- [ ] Support string instruction
