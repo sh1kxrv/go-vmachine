@@ -1,15 +1,17 @@
 # go-vmachine
 A Simple Simulation of VM
+
+## Example usage
+[Code](./cmd/app/app.go)
+
+## Demo
 ```go
-vmachine := vm.NewVM()
-vmachine.Push(
+instructions := []*instruction.Instruction{
   instruction.NewNumber(20),
   instruction.NewNumber(30),
   instruction.NewOperator(instruction.OpCodeAdd),
   instruction.NewNumber(10),
   instruction.NewOperator(instruction.OpCodeSub),
-)
-machine_result := vmachine.Run()
-fmt.Printf("Result: %v", machine_result)
-// Result: OpCode: number | Operand: 40
+}
+// -> 40
 ```
