@@ -20,3 +20,4 @@ instructions := []*instruction.Instruction{
 - [ ] Read instructions from file & transpile
 ---
 - [ ] Support string instruction
+- [ ] Unit tests
