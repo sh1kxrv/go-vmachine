@@ -33,6 +33,6 @@ func (t *Transformer) Transform(instructions []*instruction.Instruction) {
 			logger.Warn("No transform handler found for instruction", i)
 			continue
 		}
-		t.Transformers[i.OpCode](i)
+		handler(i)
 	}
 }

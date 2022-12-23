@@ -9,14 +9,15 @@ import (
 func main() {
 	println("Simple Virtual Machine on GoLang v1.0")
 	vmachine := vm.NewVM()
-	vmachine.Push(
+
+	instructions := []*instruction.Instruction{
 		instruction.NewNumber(20),
 		instruction.NewNumber(30),
 		instruction.NewOperator(instruction.OpCodeAdd),
 		instruction.NewNumber(10),
 		instruction.NewOperator(instruction.OpCodeSub),
-	)
-	vmachine.Stack.Debug()
-	machine_result := vmachine.Run()
+	}
+
+	machine_result := vmachine.Run(instructions...)
 	fmt.Printf("Result: %v", machine_result)
 }

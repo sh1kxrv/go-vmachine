@@ -18,19 +18,14 @@ func NewVM() *VM {
 	}
 }
 
-func (vm *VM) Run() interface{} {
+func (vm *VM) Run(instructions ...*instruction.Instruction) interface{} {
 	analyser := analyser.NewAnalyser()
 	resolver := resolver.NewResolver()
 	transformer := transformer.NewTransformer()
 
-	analyser.Analyse(vm.Stack.Instructions)
-	transformer.Transform(vm.Stack.Instructions)
-	resolver.Resolve(vm.Stack)
+	analyser.Analyse(instructions)
+	transformer.Transform(instructions)
+	resolver.Resolve(instructions, vm.Stack)
 
 	return vm.Stack.Pop()
-}
-
-func (vm *VM) Push(instructions ...*instruction.Instruction) *VM {
-	vm.Stack.Push(instructions...)
-	return vm
 }

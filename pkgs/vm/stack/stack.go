@@ -1,38 +1,38 @@
 package stack
 
-import "go-vmachine/pkgs/vm/instruction"
+import "fmt"
 
 type Stack struct {
-	Instructions []*instruction.Instruction
+	StackData []*StackValue
 }
 
 func NewStack() *Stack {
 	return &Stack{
-		Instructions: make([]*instruction.Instruction, 0),
+		StackData: make([]*StackValue, 0),
 	}
 }
 
-func (s *Stack) Push(instructions ...*instruction.Instruction) *Stack {
-	s.Instructions = append(instructions, s.Instructions...)
+func (s *Stack) Push(data ...*StackValue) *Stack {
+	s.StackData = append(s.StackData, data...)
 	return s
 }
 
-func (s *Stack) Pop() *instruction.Instruction {
-	if len(s.Instructions) == 0 {
-		panic("stack is empty")
+func (s *Stack) Pop() *StackValue {
+	if len(s.StackData) == 0 {
+		return nil
 	}
-	if len(s.Instructions) == 1 {
-		popped := s.Instructions[0]
-		s.Instructions = make([]*instruction.Instruction, 0)
+	if len(s.StackData) == 1 {
+		popped := s.StackData[0]
+		s.StackData = make([]*StackValue, 0)
 		return popped
 	}
-	popped := s.Instructions[0]
-	s.Instructions = s.Instructions[1:]
+	popped := s.StackData[0]
+	s.StackData = s.StackData[1:]
 	return popped
 }
 
 func (s *Stack) Debug() {
-	for _, instruction := range s.Instructions {
-		println(instruction.String())
+	for _, v := range s.StackData {
+		println(fmt.Sprintf("%v", v))
 	}
 }
