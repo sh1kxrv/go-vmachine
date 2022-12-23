@@ -3,6 +3,7 @@ package resolver
 import (
 	"fmt"
 	"go-vmachine/pkgs/vm/instruction"
+	"go-vmachine/pkgs/vm/resolver/handler"
 	"go-vmachine/pkgs/vm/stack"
 )
 
@@ -14,19 +15,26 @@ type Resolver struct {
 
 func NewResolver() *Resolver {
 	return &Resolver{
-		Handlers: make(map[instruction.OpCode]ResolverHandler),
+		Handlers: map[instruction.OpCode]ResolverHandler {
+			instruction.OpCodeLdci1: handler.NumberHandler,
+			instruction.OpCodeLdci2: handler.NumberHandler,
+			instruction.OpCodeLdci4: handler.NumberHandler,
+			instruction.OpCodeLdci8: handler.NumberHandler,
+			instruction.OpCodeLdcf4: handler.NumberHandler,
+			instruction.OpCodeLdcf8: handler.NumberHandler,
+			instruction.OpCodeOperator: handler.OperatorHandler,
+			instruction.OpCodeRet: handler.ReturnHandler,
+		},
 	}
 }
 
-func (r *Resolver) Register(opCode instruction.OpCode, handler ResolverHandler) *Resolver {
-	r.Handlers[opCode] = handler
-	return r
-}
 
-func (r *Resolver) Resolve(stack *stack.Stack, instruction *instruction.Instruction) {
-	handler_to_resolve := r.Handlers[instruction.OpCode]
-	if handler_to_resolve == nil {
-		panic(fmt.Sprintf("No handler found for instruction %v", instruction.OpCode))
+func (r *Resolver) Resolve(stack *stack.Stack) {
+	for _, instruction := range stack.Instructions {
+		handler := r.Handlers[instruction.OpCode]
+		if handler == nil {
+			panic(fmt.Sprintf("No handler found for instruction %v", instruction))
+		}
+		handler(stack, instruction)
 	}
-	handler_to_resolve(stack, instruction)
 }

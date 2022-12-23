@@ -4,8 +4,8 @@ import (
 	"go-vmachine/pkgs/vm/analyser"
 	"go-vmachine/pkgs/vm/instruction"
 	"go-vmachine/pkgs/vm/resolver"
-	"go-vmachine/pkgs/vm/resolver/handler"
 	"go-vmachine/pkgs/vm/stack"
+	"go-vmachine/pkgs/vm/transformer"
 )
 
 type VM struct {
@@ -21,20 +21,12 @@ func NewVM() *VM {
 func (vm *VM) Run() interface{} {
 	analyser := analyser.NewAnalyser()
 	resolver := resolver.NewResolver()
-	resolver.
-		Register(instruction.OpCodeLdci1, handler.NumberHandler).
-		Register(instruction.OpCodeLdci2, handler.NumberHandler).
-		Register(instruction.OpCodeLdci4, handler.NumberHandler).
-		Register(instruction.OpCodeLdci8, handler.NumberHandler).
-		Register(instruction.OpCodeLdcf4, handler.NumberHandler).
-		Register(instruction.OpCodeLdcf8, handler.NumberHandler).
-		Register(instruction.OpCodeOperator, handler.OperatorHandler).
-		Register(instruction.OpCodeRet, handler.ReturnHandler)
+	transformer := transformer.NewTransformer()
 
-	for _, instruction := range vm.Stack.Instructions {
-		analyser.Analyse(instruction)
-		resolver.Resolve(vm.Stack, instruction)
-	}
+	analyser.Analyse(vm.Stack.Instructions)
+	transformer.Transform(vm.Stack.Instructions)
+	resolver.Resolve(vm.Stack)
+
 	return vm.Stack.Pop()
 }
 
