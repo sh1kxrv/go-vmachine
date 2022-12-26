@@ -9,10 +9,12 @@ A Simple Simulation of VM
 ## Demo
 
 ```raw
+# simple program
+
 add 0x10 0x10
-print
+print # 0x20
 sub 0x12 0x04
-print
+print # 0x16
 ```
 
 ## TODO
