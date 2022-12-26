@@ -8,23 +8,16 @@ A Simple Simulation of VM
 
 ## Demo
 
-```go
-instructions := []*instruction.Instruction{
-  instruction.NewNumber(20),
-  instruction.NewNumber(30),
-  instruction.NewOperator(instruction.OpCodeAdd),
-  instruction.NewNumber(10),
-  instruction.NewOperator(instruction.OpCodeSub),
-}
-// -> 40
+```raw
+add 0x10 0x10
+print
+sub 0x12 0x04
+print
 ```
 
 ## TODO
 
-- [ ] Read instructions from file & transpile
-
----
-
-- [ ] Support string instruction
-- [ ] Unit tests
-- [ ] Solve number casting problem
+- [ ] CPU
+- [ ] Registers
+- [ ] Output opcode
+- [ ] Optimizer
