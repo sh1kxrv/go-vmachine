@@ -1,6 +1,6 @@
 package lexer
 
-import "go-vmachine/internal/token"
+import "go-vmachine/pkgs/vm/token"
 
 type Lexer struct {
 	Raw        string
@@ -83,7 +83,7 @@ func (l *Lexer) SkipComment() {
 
 func (l *Lexer) ReadNumber() string {
 	start := l.Pos
-	for isHexDigit(l.CurrentChar()) {
+	for isHexDigit(l.CurrentChar()) || l.CurrentChar() == '.' {
 		l.NextChar()
 	}
 	return string(l.Characters[start:l.Pos])
@@ -119,6 +119,9 @@ func (l *Lexer) ReadString() string {
 
 		if l.CurrentChar() == '"' {
 			break
+		}
+		if l.CurrentChar() == 0 {
+			panic("unterminated string")
 		}
 	}
 	return string(l.Characters[start:l.Pos])
