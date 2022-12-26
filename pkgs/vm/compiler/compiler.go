@@ -1,8 +1,10 @@
 package compiler
 
 import (
+	"fmt"
 	"go-vmachine/pkgs/vm/lexer"
 	"go-vmachine/pkgs/vm/token"
+	"strconv"
 )
 
 type Compiler struct {
@@ -19,16 +21,26 @@ func NewCompiler(lex *lexer.Lexer) *Compiler {
 	}
 }
 
+func (c *Compiler) Dump() {
+	for _, b := range c.Bytecode {
+		println(fmt.Sprintf("0x%02x", b))
+	}
+}
+
 func (c *Compiler) Compile() {
 	c.NextToken()
 	c.NextToken()
 
 	for c.CurrentToken.Type != token.EOF {
+		// println(fmt.Sprintf("CurrentToken: %s, %s", c.CurrentToken.Type, c.PeekToken.Type))
 		switch c.CurrentToken.Type {
-		case token.ADD:
-		case token.SUB:
-
-			// todo
+		// Todo: More arithmetic operations
+		case token.ADD, token.SUB, token.MUL, token.DIV:
+			c.MathOperation(TokenToOpcode(c.CurrentToken))
+		case token.INT:
+			// Todo: Handle int token
+		default:
+			panic("Unknown token")
 		}
 		c.NextToken()
 	}
@@ -39,11 +51,52 @@ func (c *Compiler) NextToken() {
 	c.PeekToken = c.Lexer.NextToken()
 }
 
-func (c *Compiler) MathOperation(operation int) {
+func (c *Compiler) MathOperation(operation byte) {
 
+	// Example:
+	/*
+		add 0x10 0x10 # result: 0x20
+	*/
+	if !c.Expect(token.INT) {
+		panic("Expecting int token")
+	}
+
+	// Skip math operation token
+	// add | math operation token
+	c.NextToken()
+
+	// 0x10 | int token
+	if !c.Expect(token.INT) {
+		panic("Expecting int token")
+	}
+
+	v1, err := strconv.ParseInt(c.CurrentToken.Literal, 0, 64)
+	if err != nil {
+		panic(err)
+	}
+	v2, err := strconv.ParseInt(c.PeekToken.Literal, 0, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	c.NextToken()
+
+	c.WriteBytes(operation)
+	c.WriteNumber(v1)
+	c.WriteNumber(v2)
 }
 
-// Bytecode helpers
-func (c *Compiler) WriteByte(b byte) {
-	c.Bytecode = append(c.Bytecode, b)
+// Helpers
+func (c *Compiler) WriteBytes(b ...byte) {
+	c.Bytecode = append(c.Bytecode, b...)
+}
+
+func (c *Compiler) WriteNumber(number int64) {
+	len1 := number % 256
+	len2 := (number - len1) / 256
+	c.WriteBytes(byte(len1), byte(len2))
+}
+
+func (c *Compiler) Expect(expected token.TokenType) bool {
+	return c.PeekToken.Type == expected
 }
