@@ -23,3 +23,8 @@ print # 0x16
 - [ ] Registers
 - [ ] Output opcode
 - [ ] Optimizer
+
+- [ ] CommandLine
+  - [ ] Execute
+  - [ ] Compile
+  - [ ] Run Raw
