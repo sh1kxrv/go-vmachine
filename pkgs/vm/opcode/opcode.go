@@ -10,6 +10,10 @@ func NewOpCode(instruction byte) *OpCode {
 	}
 }
 
+func (o *OpCode) V() byte {
+	return o.Instruction
+}
+
 const (
 	EXIT = 0x00
 
