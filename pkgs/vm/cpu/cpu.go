@@ -1,6 +1,9 @@
 package cpu
 
-import "go-vmachine/pkgs/vm/opcode"
+import (
+	"fmt"
+	"go-vmachine/pkgs/vm/opcode"
+)
 
 type CPU struct {
 	Stack   *Stack
@@ -15,6 +18,12 @@ func NewCPU() *CPU {
 	}
 }
 
+func (c *CPU) ReadValue() int {
+	l := int(c.NextByteInc())
+	l2 := int(c.NextByteInc())
+	return l + l2*256
+}
+
 func (c *CPU) Run() {
 	flag := true
 	for flag {
@@ -24,9 +33,20 @@ func (c *CPU) Run() {
 			flag = false
 		case opcode.ADD:
 			c.Pointer++
-			// todo: read add operation
-			// read bytes to int
+			v := c.ReadValue()
+			v2 := c.ReadValue()
+			c.Stack.Push(v + v2)
+			println(fmt.Printf("%v + %v", v, v2))
+		case opcode.SUB:
+			c.Pointer++
+			v := c.ReadValue()
+			v2 := c.ReadValue()
+			c.Stack.Push(v - v2)
+			println(fmt.Printf("%v - %v", v, v2))
+		default:
+			panic("wtf")
 		}
+
 	}
 }
 
@@ -38,4 +58,14 @@ func (c *CPU) Load(program []byte) {
 		// lint copy() silence
 		c.Program[i+0] = b
 	}
+}
+
+func (c *CPU) CurrentByte() byte {
+	return c.Program[c.Pointer]
+}
+
+func (c *CPU) NextByteInc() byte {
+	b := c.Program[c.Pointer]
+	c.Pointer++
+	return b
 }

@@ -27,7 +27,7 @@ func (c *Compiler) Dump() {
 	}
 }
 
-func (c *Compiler) Compile() {
+func (c *Compiler) Compile() []byte {
 	c.NextToken()
 	c.NextToken()
 
@@ -44,6 +44,7 @@ func (c *Compiler) Compile() {
 		}
 		c.NextToken()
 	}
+	return c.Bytecode
 }
 
 func (c *Compiler) NextToken() {
@@ -52,7 +53,6 @@ func (c *Compiler) NextToken() {
 }
 
 func (c *Compiler) MathOperation(operation byte) {
-
 	// Example:
 	/*
 		add 0x10 0x10 # result: 0x20

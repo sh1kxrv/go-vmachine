@@ -2,6 +2,7 @@ package main
 
 import (
 	"go-vmachine/pkgs/vm/compiler"
+	"go-vmachine/pkgs/vm/cpu"
 	"go-vmachine/pkgs/vm/lexer"
 )
 
@@ -14,6 +15,8 @@ func main() {
 	`
 	lexer := lexer.NewLexer(code)
 	compiler := compiler.NewCompiler(lexer)
-	compiler.Compile()
-	compiler.Dump()
+	cpu := cpu.NewCPU()
+	compiled := compiler.Compile()
+	cpu.Load(compiled)
+	cpu.Run()
 }
