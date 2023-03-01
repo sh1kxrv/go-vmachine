@@ -1,6 +1,7 @@
 package compiler
 
 import (
+	"encoding/binary"
 	"fmt"
 	"go-vmachine/pkgs/vm/lexer"
 	"go-vmachine/pkgs/vm/token"
@@ -92,9 +93,10 @@ func (c *Compiler) WriteBytes(b ...byte) {
 }
 
 func (c *Compiler) WriteNumber(number int64) {
-	len1 := number % 256
-	len2 := (number - len1) / 256
-	c.WriteBytes(byte(len1), byte(len2))
+	b := make([]byte, 8)
+	binary.LittleEndian.PutUint64(b, uint64(number))
+	c.WriteBytes(byte(len(b)))
+	c.WriteBytes(b...)
 }
 
 func (c *Compiler) Expect(expected token.TokenType) bool {

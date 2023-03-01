@@ -1,6 +1,7 @@
 package cpu
 
 import (
+	"encoding/binary"
 	"fmt"
 	"go-vmachine/pkgs/vm/opcode"
 )
@@ -18,10 +19,13 @@ func NewCPU() *CPU {
 	}
 }
 
-func (c *CPU) ReadValue() int {
-	l := int(c.NextByteInc())
-	l2 := int(c.NextByteInc())
-	return l + l2*256
+func (c *CPU) ReadValue() int64 {
+	intLen := int(c.NextByte())
+	readed := make([]byte, 8)
+	for i := 0; i < intLen; i++ {
+		readed[i] = c.NextByte()
+	}
+	return int64(binary.LittleEndian.Uint64(readed))
 }
 
 func (c *CPU) Run() {
@@ -36,17 +40,16 @@ func (c *CPU) Run() {
 			v := c.ReadValue()
 			v2 := c.ReadValue()
 			c.Stack.Push(v + v2)
-			println(fmt.Printf("%v + %v", v, v2))
+			println(fmt.Sprintf("%d + %d", v, v2))
 		case opcode.SUB:
 			c.Pointer++
 			v := c.ReadValue()
 			v2 := c.ReadValue()
 			c.Stack.Push(v - v2)
-			println(fmt.Printf("%v - %v", v, v2))
+			println(fmt.Sprintf("%d - %d", v, v2))
 		default:
 			panic("wtf")
 		}
-
 	}
 }
 
@@ -64,7 +67,7 @@ func (c *CPU) CurrentByte() byte {
 	return c.Program[c.Pointer]
 }
 
-func (c *CPU) NextByteInc() byte {
+func (c *CPU) NextByte() byte {
 	b := c.Program[c.Pointer]
 	c.Pointer++
 	return b
