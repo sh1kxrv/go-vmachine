@@ -4,21 +4,27 @@ import (
 	"encoding/binary"
 	"fmt"
 	"go-vmachine/pkgs/vm/lexer"
+	"go-vmachine/pkgs/vm/opcode"
 	"go-vmachine/pkgs/vm/token"
-	"strconv"
 )
 
 type Compiler struct {
 	Lexer        *lexer.Lexer
 	Bytecode     []byte
+	Register     []byte
 	CurrentToken token.Token
 	PeekToken    token.Token
+}
+
+func ExpectedToken(token string) {
+	panic(fmt.Sprintf("Expecting token: %s", token))
 }
 
 func NewCompiler(lex *lexer.Lexer) *Compiler {
 	return &Compiler{
 		Lexer:    lex,
 		Bytecode: []byte{},
+		Register: []byte{},
 	}
 }
 
@@ -33,13 +39,17 @@ func (c *Compiler) Compile() []byte {
 	c.NextToken()
 
 	for c.CurrentToken.Type != token.EOF {
-		// println(fmt.Sprintf("CurrentToken: %s, %s", c.CurrentToken.Type, c.PeekToken.Type))
 		switch c.CurrentToken.Type {
 		// Todo: More arithmetic operations
 		case token.ADD, token.SUB, token.MUL, token.DIV:
-			c.MathOperation(TokenToOpcode(c.CurrentToken))
+			c.MathOp(opcode.LookupOpCode(string(c.CurrentToken.Type)))
+		case token.REG:
+			c.SetRegister()
+		case token.READ:
+			c.IncludeRead()
+			// ...
 		case token.INT:
-			// Todo: Handle int token
+			// ...
 		default:
 			panic("Unknown token")
 		}
@@ -53,13 +63,43 @@ func (c *Compiler) NextToken() {
 	c.PeekToken = c.Lexer.NextToken()
 }
 
-func (c *Compiler) MathOperation(operation byte) {
+func (c *Compiler) SetRegister() {
+	if !c.Expect(token.INT) {
+		ExpectedToken(token.INT)
+	}
+
+	c.NextToken()
+
+	if !c.Expect(token.INT) {
+		ExpectedToken(token.INT)
+	}
+
+	vReg := SafetyParseInt(c.CurrentToken.Literal)
+
+	if vReg > 0xFF {
+		panic("Register should be less 0xFF")
+	}
+
+	vDefaultValue := SafetyParseInt(c.PeekToken.Literal)
+
+	c.NextToken()
+
+	c.WriteBytes(opcode.REG)
+	c.WriteBytes(byte(vReg))
+	c.WriteNumber(vDefaultValue)
+}
+
+func (c *Compiler) IncludeRead() {
+	c.NextToken()
+}
+
+func (c *Compiler) MathOp(operation byte) {
 	// Example:
 	/*
 		add 0x10 0x10 # result: 0x20
 	*/
 	if !c.Expect(token.INT) {
-		panic("Expecting int token")
+		ExpectedToken(token.INT)
 	}
 
 	// Skip math operation token
@@ -68,23 +108,35 @@ func (c *Compiler) MathOperation(operation byte) {
 
 	// 0x10 | int token
 	if !c.Expect(token.INT) {
-		panic("Expecting int token")
+		ExpectedToken(token.INT)
 	}
 
-	v1, err := strconv.ParseInt(c.CurrentToken.Literal, 0, 64)
-	if err != nil {
-		panic(err)
-	}
-	v2, err := strconv.ParseInt(c.PeekToken.Literal, 0, 64)
-	if err != nil {
-		panic(err)
-	}
+	v1 := SafetyParseInt(c.CurrentToken.Literal)
+	v2 := SafetyParseInt(c.PeekToken.Literal)
+	var v3 byte = opcode.NOP
 
 	c.NextToken()
+
+	if c.Expect(token.TO) {
+		// Skip prev number and set pointer to token "TO"
+		c.NextToken()
+
+		if !c.Expect(token.INT) {
+			ExpectedToken(token.INT)
+		}
+
+		unsafeReg := SafetyParseInt(c.PeekToken.Literal)
+		if unsafeReg >= 0xFF {
+			panic("Register should be less 0xFF")
+		}
+
+		v3 = byte(unsafeReg)
+	}
 
 	c.WriteBytes(operation)
 	c.WriteNumber(v1)
 	c.WriteNumber(v2)
+	c.WriteBytes(v3)
 }
 
 // Helpers

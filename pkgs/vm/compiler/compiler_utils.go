@@ -1,21 +1,13 @@
 package compiler
 
 import (
-	"go-vmachine/pkgs/vm/opcode"
-	"go-vmachine/pkgs/vm/token"
+	"strconv"
 )
 
-func TokenToOpcode(t token.Token) byte {
-	switch t.Type {
-	case token.ADD:
-		return opcode.ADD
-	case token.SUB:
-		return opcode.SUB
-	case token.MUL:
-		return opcode.MUL
-	case token.DIV:
-		return opcode.DIV
-	default:
-		panic("Unknown token type")
+func SafetyParseInt(raw string) int64 {
+	parsed, err := strconv.ParseInt(raw, 0, 64)
+	if err != nil {
+		panic(err)
 	}
+	return parsed
 }

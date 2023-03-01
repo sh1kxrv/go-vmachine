@@ -9,6 +9,7 @@ import (
 type CPU struct {
 	Stack   *Stack
 	Program [0xFFFFFF]byte
+	Regs    [0xFF]byte
 	Pointer int
 }
 
@@ -16,6 +17,7 @@ func NewCPU() *CPU {
 	return &CPU{
 		Stack:   NewStack(),
 		Pointer: 0,
+		Regs:    [0xFF]byte{},
 	}
 }
 
@@ -39,14 +41,21 @@ func (c *CPU) Run() {
 			c.Pointer++
 			v := c.ReadValue()
 			v2 := c.ReadValue()
-			c.Stack.Push(v + v2)
-			println(fmt.Sprintf("%d + %d", v, v2))
+			v3 := c.NextByte()
+			if v3 == opcode.NOP {
+				c.Stack.Push(v + v2)
+			} else if v3 < 0xFF {
+				// ...
+			} else {
+				panic("Register should be less 0xFF")
+			}
+			println(fmt.Sprintf("%d + %d -> %d", v, v2, v+v2))
 		case opcode.SUB:
 			c.Pointer++
 			v := c.ReadValue()
 			v2 := c.ReadValue()
 			c.Stack.Push(v - v2)
-			println(fmt.Sprintf("%d - %d", v, v2))
+			println(fmt.Sprintf("%d - %d -> %d", v, v2, v-v2))
 		default:
 			panic("wtf")
 		}

@@ -24,13 +24,23 @@ const (
 	SUB = "SUB"
 	MUL = "MUL"
 	DIV = "DIV"
+
+	// Variables
+	REG = "REG"
+	TO  = "TO"
+
+	// Output
+	READ = "READ"
 )
 
 var keywords = map[string]TokenType{
-	"add": ADD,
-	"sub": SUB,
-	"mul": MUL,
-	"div": DIV,
+	"add":  ADD,
+	"sub":  SUB,
+	"mul":  MUL,
+	"div":  DIV,
+	"reg":  REG,
+	"to":   TO,
+	"read": READ,
 }
 
 func LookupIdent(ident string) TokenType {

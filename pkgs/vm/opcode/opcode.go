@@ -27,4 +27,29 @@ const (
 	PUSH = 0x10
 	POP  = 0x11
 	PEEK = 0x12
+
+	// Read
+	READ = 0x13
+
+	// Variables
+	REG = 0xF
+
+	NOP = 0xFF
 )
+
+var opcodes = map[string]byte{
+	"UNKNOWN": 0x00,
+	"ADD":     ADD,
+	"SUB":     SUB,
+	"MUL":     MUL,
+	"DIV":     DIV,
+	"REG":     REG,
+	"READ":    READ,
+}
+
+func LookupOpCode(token string) byte {
+	if opcode, ok := opcodes[token]; ok {
+		return opcode
+	}
+	return NOP
+}
