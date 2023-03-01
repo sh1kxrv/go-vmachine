@@ -56,6 +56,9 @@ func (c *CPU) Run() {
 			v2 := c.ReadValue()
 			c.Stack.Push(v - v2)
 			println(fmt.Sprintf("%d - %d -> %d", v, v2, v-v2))
+		case opcode.READ:
+			c.Pointer++
+			// ...
 		default:
 			panic("wtf")
 		}

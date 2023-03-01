@@ -11,8 +11,6 @@ func main() {
 		reg 0x01 0x00 					# set register 0x01 with default value inner - 0x00
 		add 0x10 0x10 to 0x01   # 16 + 16 and write it to register with index 0x01
 		read 0x01               # read from 0x01
-		add 0x01 0x10						# 1 + 16 and push to stack
-		sub 0x10 0x12					  # 16 + 18 and push to stack
 	`
 	lexer := lexer.NewLexer(code)
 	compiler := compiler.NewCompiler(lexer)
